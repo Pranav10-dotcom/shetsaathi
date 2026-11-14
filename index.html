@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>शेतसाथी — Marathwada Farmer Companion</title>
+<style>
+:root{
+  --brand:#3B6D11;--brand-bg:#EAF3DE;--brand-mid:#639922;
+  --am:#BA7517;--am-bg:#FAEEDA;
+  --ri:#993C1D;--ri-bg:#FAECE7;
+  --te:#0F6E56;--te-bg:#E1F5EE;
+  --text:#1a1a1a;--text2:#666;--bg:#f5f4f0;--surface:#fff;
+  --border:rgba(0,0,0,.11);--border2:rgba(0,0,0,.18);
+  --r8:8px;--r12:12px;--r16:16px;
+}
+@media(prefers-color-scheme:dark){:root{--brand:#C0DD97;--brand-bg:#173404;--brand-mid:#97C459;--am:#EF9F27;--am-bg:#412402;--ri:#F09595;--ri-bg:#4A1B0C;--te:#5DCAA5;--te-bg:#04342C;--text:#f0efeb;--text2:#999;--bg:#1a1a18;--surface:#242421;--border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.2);}}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:20px 10px;}
+#app{width:100%;max-width:420px;background:var(--surface);border-radius:var(--r16);overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.12);}
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* Header */
+.hdr{background:var(--brand);color:var(--brand-bg);padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.hdr-t{font-size:20px;font-weight:600;}
+.hdr-s{font-size:11px;opacity:.8;margin-top:1px;}
+.hdr-back{background:none;border:none;cursor:pointer;color:var(--brand-bg);font-size:20px;padding:0 8px 0 0;line-height:1;}
+.hdr-logo{width:34px;height:34px;background:rgba(255,255,255,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dot{width:8px;height:8px;border-radius:50%;background:#facc15;display:inline-block;margin-right:4px;}
+
+/* Offline banner */
+.obs{background:var(--am-bg);color:var(--am);padding:7px 16px;font-size:12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);}
+
+/* Body */
+.body{padding:14px;background:var(--bg);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:14px 15px;margin-bottom:11px;}
+
+/* Module Grid */
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.mb{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r12);padding:15px 13px;cursor:pointer;text-align:left;transition:transform .12s,background .12s;}
+.mb:hover{background:var(--brand-bg);}
+.mb:active{transform:scale(.97);}
+.mi{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:9px;}
+.mn{font-size:14px;font-weight:600;color:var(--text);}
+.md{font-size:11px;color:var(--text2);margin-top:2px;}
+.sh{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+
+/* Tags */
+.tag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:var(--r8);margin-right:4px;font-weight:600;}
+.tw{background:var(--te-bg);color:var(--te);}
+.ts{background:var(--am-bg);color:var(--am);}
+
+/* Form */
+.fl{font-size:13px;font-weight:600;color:var(--text);margin-bottom:7px;display:block;}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.rg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.ro{border:1.5px solid var(--border2);border-radius:var(--r8);padding:11px 9px;cursor:pointer;text-align:center;font-size:13px;color:var(--text);transition:all .15s;background:var(--surface);}
+.ro.sel{border-color:var(--brand);background:var(--brand-bg);color:var(--brand);font-weight:600;}
+.ro-t{font-size:14px;margin-bottom:2px;}
+.ro-s{font-size:10px;color:var(--text2);}
+.ro.sel .ro-s{color:var(--brand-mid);}
+
+/* Slider */
+.ni{display:flex;align-items:center;gap:11px;}
+.ni input[type=range]{flex:1;accent-color:var(--brand);}
+.nv{font-size:19px;font-weight:700;color:var(--brand);min-width:72px;text-align:center;}
+
+/* Buttons */
+.bp{width:100%;padding:15px;font-size:16px;font-weight:600;background:var(--brand);color:var(--brand-bg);border:none;border-radius:var(--r12);cursor:pointer;margin-top:8px;transition:opacity .15s;}
+.bp:hover{opacity:.88;}
+.bs{width:100%;padding:12px;font-size:14px;font-weight:500;background:none;border:1.5px solid var(--border2);border-radius:var(--r12);cursor:pointer;margin-top:8px;color:var(--text);transition:background .15s;}
+.bs:hover{background:var(--brand-bg);border-color:var(--brand);color:var(--brand);}
+
+/* Crop result cards */
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);overflow:hidden;margin-bottom:11px;}
+.cch{padding:13px 15px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid var(--border);}
+.cn{font-size:20px;font-weight:700;color:var(--text);}
+.cb{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;}
+.bl{background:var(--brand-bg);color:var(--brand);}
+.bm{background:var(--am-bg);color:var(--am);}
+.bh{background:var(--ri-bg);color:var(--ri);}
+.ccb{padding:13px 15px;}
+.cr{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.cr:last-child{border-bottom:none;}
+.cl{color:var(--text2);}
+.cv{font-weight:600;font-size:14px;color:var(--text);}
+.profit{color:var(--brand)!important;}
+.loss{color:var(--ri)!important;}
+
+/* Steps */
+.si{display:flex;gap:12px;margin-bottom:15px;align-items:flex-start;}
+.sn{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:var(--brand-bg);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid var(--brand);}
+.st{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.sd{font-size:12px;color:var(--text2);line-height:1.6;}
+
+/* Guide pills */
+.cp2{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px;}
+.pill{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--border2);background:var(--surface);cursor:pointer;color:var(--text);transition:all .15s;}
+.pill.act{background:var(--brand-bg);border-color:var(--brand);color:var(--brand);font-weight:600;}
+
+/* Alerts */
+.al{padding:11px 13px;border-radius:var(--r8);margin-bottom:8px;font-size:13px;line-height:1.55;border-left:3px solid;}
+.al-d{background:var(--ri-bg);border-color:var(--ri);color:var(--text);}
+.al-w{background:var(--am-bg);border-color:var(--am);color:var(--text);}
+.al-s{background:var(--brand-bg);border-color:var(--brand);color:var(--text);}
+
+/* Weather */
+.wtemp{font-size:52px;font-weight:700;color:var(--text);}
+.wbox{width:62px;height:62px;border-radius:50%;background:var(--am-bg);display:flex;align-items:center;justify-content:center;}
+.fg{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:11px;}
+.fd{background:var(--bg);border-radius:var(--r8);padding:8px 3px;text-align:center;font-size:11px;color:var(--text2);}
+.ft{font-size:13px;font-weight:600;color:var(--text);margin-top:4px;}
+
+/* Market rows */
+.mr2{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border);}
+.mr2:last-child{border-bottom:none;}
+.mcrp{font-size:14px;font-weight:600;color:var(--text);}
+.mmnd{font-size:11px;color:var(--text2);}
+.mpv{font-size:15px;font-weight:700;color:var(--text);}
+.mt{font-size:11px;padding:2px 7px;border-radius:11px;margin-left:5px;font-weight:600;}
+.tu{background:var(--brand-bg);color:var(--brand);}
+.td{background:var(--ri-bg);color:var(--ri);}
+.tn{background:var(--bg);color:var(--text2);}
+
+/* Disclaimer */
+.disc{font-size:11px;color:var(--text2);padding:9px 11px;border-radius:var(--r8);background:var(--bg);border-left:2px solid var(--border2);margin-top:11px;line-height:1.5;}
+
+/* Best badge */
+.best-badge{font-size:10px;background:var(--brand-bg);color:var(--brand);padding:2px 8px;border-radius:10px;margin-bottom:4px;font-weight:600;display:inline-block;}
+
+/* Msp warning */
+.msp-warn{font-size:11px;font-weight:600;color:var(--ri);}
+.msp-ok{font-size:11px;font-weight:600;color:var(--brand);}
+.msp-wait{font-size:11px;font-weight:600;color:var(--am);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══════════ HOME ══════════ -->
+<div id="sc-home" class="screen active">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M4 18 C4 18,8 8,18 4 C18 4,11 11,11 18Z" fill="rgba(255,255,255,.95)"/>
+        <line x1="11" y1="18" x2="11" y2="11" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <div style="flex:1;">
+      <div class="hdr-t">शेतसाथी</div>
+      <div class="hdr-s">मराठवाडा शेतकरी सहाय्यक</div>
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,.85);display:flex;align-items:center;">
+      <div class="dot"></div>ऑफलाइन
+    </div>
+  </div>
+  <div class="obs">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 3.5v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="6.5" cy="9.5" r=".7" fill="currentColor"/></svg>
+    ऑफलाइन मोड — पीक माहिती उपलब्ध &nbsp;·&nbsp; शेवटचे अपडेट: आज, ७:३०
+  </div>
+  <div class="body">
+    <div class="card" style="background:var(--brand-bg);border-color:var(--brand);margin-bottom:13px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:3px;">नमस्कार, शेतकरी</div>
+          <div style="font-size:17px;font-weight:700;color:var(--text);">तुमचा शेत निर्णय सुरू करा</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:10px;color:var(--text2);">हंगाम</div>
+          <div style="font-size:14px;font-weight:700;color:var(--brand);" id="h-season">रब्बी २०२५–२६</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;"><span class="tag tw">ऑरंगाबाद</span><span class="tag ts">एप्रिल २०२६</span></div>
+    </div>
+
+    <div class="sh">मुख्य सेवा</div>
+    <div class="mg">
+      <button class="mb" onclick="nav('sc-adv')">
+        <div class="mi" style="background:var(--brand-bg);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 14L3 8Q3 4,10 4Q17 4,17 8L17 14" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round"/><path d="M1.5 14L18.5 14" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round"/><path d="M7 8L13 8" stroke="var(--brand)" stroke-width="1.3" stroke-linecap="round" opacity=".5"/></svg>
+        </div>
+        <div class="mn">पीक सल्लागार</div>
+        <div class="md">पीक निवड व शिफारस</div>
+      </button>
+      <button class="mb" onclick="nav('sc-guide')">
+        <div class="mi" style="background:var(--te-bg);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="var(--te)" stroke-width="1.8"/><path d="M7 8L13 8M7 11L11 11M7 14L9 14" stroke="var(--te)" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="mn">शेती मार्गदर्शन</div>
+        <div class="md">पायरी-पायरी सूचना</div>
+      </button>
+      <button class="mb" onclick="nav('sc-wx')">
+        <div class="mi" style="background:var(--am-bg);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="4" stroke="var(--am)" stroke-width="1.8"/><path d="M10 2L10 4M10 16L10 18M2 10L4 10M16 10L18 10" stroke="var(--am)" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="mn">हवामान</div>
+        <div class="md">ताजे हवामान अंदाज</div>
+      </button>
+      <button class="mb" onclick="nav('sc-mkt')">
+        <div class="mi" style="background:var(--brand-bg);">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15L7 9L11 13L15 6" stroke="var(--brand)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="6" r="1.8" fill="var(--brand)"/></svg>
+        </div>
+        <div class="mn">बाजारभाव</div>
+        <div class="md">आजचे मंडी दर</div>
+      </button>
+    </div>
+
+    <div class="sh">आजचे बाजारभाव (अंदाजे)</div>
+    <div class="card" style="padding:0 15px;">
+      <div class="mr2">
+        <div><div class="mcrp">सोयाबीन</div><div class="mmnd">लातूर APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 4,250</span><span class="mt tu">▲ 2.1%</span><div class="msp-ok">विका</div></div>
+      </div>
+      <div class="mr2">
+        <div><div class="mcrp">कांदा</div><div class="mmnd">लासलगाव APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 1,800</span><span class="mt td">▼ 5.2%</span><div class="msp-wait">थांबा</div></div>
+      </div>
+      <div class="mr2">
+        <div><div class="mcrp">हरभरा</div><div class="mmnd">औरंगाबाद APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 5,100</span><span class="mt tn">— स्थिर</span><div class="msp-warn">MSP खाली!</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADVISOR ══════════ -->
+<div id="sc-adv" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="nav('sc-home')">←</button>
+    <div><div class="hdr-t">पीक सल्लागार</div><div class="hdr-s">तुमची माहिती भरा</div></div>
+  </div>
+  <div class="body">
+    <div class="card">
+      <div style="margin-bottom:15px;">
+        <span class="fl">📏 जमीन (एकर)</span>
+        <div class="ni">
+          <input type="range" min="1" max="15" step="0.5" value="3" id="sl-land" oninput="updLand(this.value)">
+          <div class="nv" id="lv">3 एकर</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <span class="fl">🌿 हंगाम</span>
+        <div class="rg">
+          <div class="ro" data-g="season" data-v="kharif" onclick="pick('season','kharif',this)">
+            <div class="ro-t">खरीप</div><div class="ro-s">जून–ऑक्टो</div>
+          </div>
+          <div class="ro sel" data-g="season" data-v="rabi" onclick="pick('season','rabi',this)">
+            <div class="ro-t">रब्बी</div><div class="ro-s">नोव्हें–मार्च</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <span class="fl">💧 सिंचन प्रकार</span>
+        <div class="rg">
+          <div class="ro sel" data-g="irr" data-v="none" onclick="pick('irr','none',this)">
+            <div class="ro-t">कोरडवाहू</div><div class="ro-s">पाऊसावर</div>
+          </div>
+          <div class="ro" data-g="irr" data-v="drip" onclick="pick('irr','drip',this)">
+            <div class="ro-t">ठिबक</div><div class="ro-s">Drip</div>
+          </div>
+          <div class="ro" data-g="irr" data-v="sprinkler" onclick="pick('irr','sprinkler',this)">
+            <div class="ro-t">तुषार</div><div class="ro-s">Sprinkler</div>
+          </div>
+          <div class="ro" data-g="irr" data-v="flood" onclick="pick('irr','flood',this)">
+            <div class="ro-t">पूर</div><div class="ro-s">Flood</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:8px;">
+        <span class="fl">💰 बजेट (प्रति एकर)</span>
+        <div class="rg3">
+          <div class="ro sel" data-g="bgt" data-v="low" onclick="pick('bgt','low',this)">
+            <div class="ro-t">कमी</div><div class="ro-s">&lt;₹10k</div>
+          </div>
+          <div class="ro" data-g="bgt" data-v="medium" onclick="pick('bgt','medium',this)">
+            <div class="ro-t">मध्यम</div><div class="ro-s">₹10–25k</div>
+          </div>
+          <div class="ro" data-g="bgt" data-v="high" onclick="pick('bgt','high',this)">
+            <div class="ro-t">जास्त</div><div class="ro-s">&gt;₹25k</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="bp" onclick="calcRec()">शिफारस पहा →</button>
+    </div>
+    <div class="disc" style="margin-top:0;">ही एक निर्णय सहाय्यक प्रणाली आहे. शेती निर्णय घेण्यापूर्वी स्थानिक कृषी अधिकाऱ्याशी संपर्क करा.</div>
+  </div>
+</div>
+
+<!-- ══════════ RESULTS ══════════ -->
+<div id="sc-res" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="nav('sc-adv')">←</button>
+    <div><div class="hdr-t">शिफारस निकाल</div><div class="hdr-s" id="res-sub">तुमच्यासाठी सर्वोत्तम पिके</div></div>
+  </div>
+  <div class="body" id="res-body"></div>
+</div>
+
+<!-- ══════════ GUIDE ══════════ -->
+<div id="sc-guide" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="nav('sc-home')">←</button>
+    <div><div class="hdr-t">शेती मार्गदर्शन</div><div class="hdr-s">पायरी-पायरी सूचना</div></div>
+  </div>
+  <div class="body">
+    <div class="sh">पीक निवडा</div>
+    <div class="cp2" id="g-pills"></div>
+    <div id="g-content"></div>
+  </div>
+</div>
+
+<!-- ══════════ WEATHER ══════════ -->
+<div id="sc-wx" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="nav('sc-home')">←</button>
+    <div><div class="hdr-t">हवामान</div><div class="hdr-s">औरंगाबाद, मराठवाडा</div></div>
+  </div>
+  <div class="body">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div>
+          <div class="wtemp">37°C</div>
+          <div style="font-size:14px;color:var(--text2);">उष्ण व कोरडे</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px;">आर्द्रता: 32% &nbsp;·&nbsp; वारा: 14 km/h</div>
+        </div>
+        <div class="wbox">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="9.5" fill="#EF9F27"/>
+            <path d="M18 4L18 7.5M18 28.5L18 32M4 18L7.5 18M28.5 18L32 18M8.2 8.2L10.7 10.7M25.3 25.3L27.8 27.8M27.8 8.2L25.3 10.7M10.7 25.3L8.2 27.8" stroke="#EF9F27" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="sh">5 दिवसांचा अंदाज</div>
+      <div class="fg">
+        <div class="fd">
+          <div>आज</div>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin:4px auto;display:block;"><circle cx="9" cy="9" r="5.5" fill="#EF9F27"/></svg>
+          <div class="ft">37°</div>
+        </div>
+        <div class="fd">
+          <div>उद्या</div>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin:4px auto;display:block;"><circle cx="9" cy="9" r="5.5" fill="#EF9F27"/></svg>
+          <div class="ft">35°</div>
+        </div>
+        <div class="fd">
+          <div>बुध</div>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin:4px auto;display:block;"><ellipse cx="9" cy="8" rx="6" ry="4" fill="#B4B2A9"/><path d="M5 12L5.5 15M9 12L9.5 15M13 12L13.5 15" stroke="#85B7EB" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <div class="ft">32°</div>
+        </div>
+        <div class="fd">
+          <div>गुरु</div>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin:4px auto;display:block;"><ellipse cx="9" cy="8" rx="6" ry="4" fill="#B4B2A9"/><path d="M5 12L5.5 15M9 12L9.5 15M13 12L13.5 15" stroke="#85B7EB" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <div class="ft">29°</div>
+        </div>
+        <div class="fd">
+          <div>शुक्र</div>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin:4px auto;display:block;"><ellipse cx="9" cy="8" rx="6" ry="4" fill="#B4B2A9"/><path d="M5 12L5.5 14M9 12L9.5 14" stroke="#85B7EB" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <div class="ft">27°</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sh">शेती सूचना</div>
+    <div class="al al-d"><strong>उष्णता जास्त!</strong> तापमान 35°C च्या वर आहे. झाडांना सकाळी लवकर (6–8 AM) किंवा संध्याकाळी (5–7 PM) पाणी द्या. दुपारी पाणी देऊ नका.</div>
+    <div class="al al-w"><strong>पाऊस अपेक्षित:</strong> बुधवारी पाऊस येण्याची शक्यता. खत किंवा फवारणी बुधवारपूर्वी करा. पावसानंतर बुरशीनाशक फवारणी करा.</div>
+    <div class="al al-s"><strong>फवारणीसाठी उत्तम दिवस:</strong> वारा कमी असल्यामुळे आज व उद्या फवारणीसाठी सर्वोत्तम. सकाळी लवकर फवारणी करा.</div>
+    <div class="disc">ही हवामान माहिती अंदाजे आहे. अधिकृत हवामान विभाग (IMD) ची माहिती तपासा. शेती निर्णयासाठी स्थानिक माहिती महत्त्वाची आहे.</div>
+  </div>
+</div>
+
+<!-- ══════════ MARKET ══════════ -->
+<div id="sc-mkt" class="screen">
+  <div class="hdr">
+    <button class="hdr-back" onclick="nav('sc-home')">←</button>
+    <div><div class="hdr-t">बाजारभाव</div><div class="hdr-s">मराठवाडा APMC · आज</div></div>
+  </div>
+  <div class="obs">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 3.5v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="6.5" cy="9.5" r=".7" fill="currentColor"/></svg>
+    संग्रहित भाव दाखवत आहे &nbsp;·&nbsp; शेवटचे अपडेट: काल, 5:00 PM
+  </div>
+  <div class="body">
+    <div class="sh" style="margin-top:2px;">खरीप पिके</div>
+    <div class="card" style="padding:0 15px;">
+      <div class="mr2">
+        <div><div class="mcrp">सोयाबीन</div><div class="mmnd">लातूर APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 4,250</span><span class="mt tu">▲ 2.1%</span><div style="font-size:11px;color:var(--text2);">श्रेणी: ₹4,100–4,450</div><div class="msp-ok">सल्ला: विका</div></div>
+      </div>
+      <div class="mr2">
+        <div><div class="mcrp">कापूस</div><div class="mmnd">जालना APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 7,100</span><span class="mt tn">— स्थिर</span><div style="font-size:11px;color:var(--text2);">श्रेणी: ₹6,800–7,300</div><div class="msp-wait">सल्ला: थांबा</div></div>
+      </div>
+      <div class="mr2">
+        <div><div class="mcrp">तूर</div><div class="mmnd">उस्मानाबाद APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 6,450</span><span class="mt tu">▲ 0.8%</span><div style="font-size:11px;color:var(--text2);">श्रेणी: ₹6,200–6,550</div><div class="msp-ok">सल्ला: विका</div></div>
+      </div>
+      <div class="mr2">
+        <div><div class="mcrp">भुईमूग</div><div class="mmnd">नांदेड APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 5,200</span><span class="mt td">▼ 1.3%</span><div style="font-size:11px;color:var(--text2);">श्रेणी: ₹4,900–5,400</div><div class="msp-wait">सल्ला: थांबा</div></div>
+      </div>
+    </div>
+
+    <div class="sh">रब्बी पिके</div>
+    <div class="card" style="padding:0 15px;">
+      <div class="mr2">
+        <div><div class="mcrp">हरभरा</div><div class="mmnd">औरंगाबाद APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 5,100</span><span class="mt tn">— स्थिर</span><div style="font-size:11px;color:var(--text2);">MSP: ₹5,440</div><div class="msp-warn">⚠ MSP च्या खाली!</div></div>
+      </div>
+      <div class="mr2">
+        <div><div class="mcrp">कांदा</div><div class="mmnd">लासलगाव APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 1,800</span><span class="mt td">▼ 5.2%</span><div style="font-size:11px;color:var(--text2);">श्रेणी: ₹1,500–2,200</div><div class="msp-wait">सल्ला: थांबा</div></div>
+      </div>
+      <div class="mr2">
+        <div><div class="mcrp">गहू</div><div class="mmnd">बीड APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 2,350</span><span class="mt tu">▲ 1.5%</span><div style="font-size:11px;color:var(--text2);">MSP: ₹2,275</div><div class="msp-ok">MSP वर — विका</div></div>
+      </div>
+      <div class="mr2">
+        <div><div class="mcrp">लसूण</div><div class="mmnd">सोलापूर APMC</div></div>
+        <div style="text-align:right;"><span class="mpv">₹ 3,400</span><span class="mt tu">▲ 4.2%</span><div style="font-size:11px;color:var(--text2);">श्रेणी: ₹2,800–4,200</div><div class="msp-ok">सल्ला: विका</div></div>
+      </div>
+    </div>
+    <div class="disc">हे भाव अंदाजे आहेत. खरेदी-विक्रीपूर्वी स्थानिक APMC मध्ये तपासा. MSP = किमान आधारभूत किंमत. ही माहिती अंदाजे आहे — नफा-तोटा शेतकऱ्याचा स्वतःचा निर्णय आहे.</div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+const S={land:3,season:'rabi',irr:'none',bgt:'low',guide:'gram'};
+
+const C={
+  soybean:{n:'सोयाबीन',e:'Soybean',s:['kharif'],i:['none','drip','sprinkler','flood'],b:['low','medium','high'],w:'मध्यम',c:[8000,14000],y:[8,14],p:[3500,5000],r:'medium',rl:'मध्यम',d:'कोरड्या हवामानात चांगले उत्पन्न देणारे खरीप पीक. मराठवाड्यात मोठ्या प्रमाणात घेतले जाते.',steps:[{t:'जमीन तयारी',d:'खोल नांगरणी करा (20–25 सेमी). शेणखत 5 टन/एकर मिसळा. माती भुसभुशीत व समपातळी करा.'},{t:'बीज प्रक्रिया व पेरणी',d:'बीजांना Rhizobium व PSB जिवाणू खत लावा. जून अखेर–जुलैत पेरणी. ओळ अंतर 45 सेमी. बी दर: 25–30 किलो/एकर.'},{t:'खत व्यवस्थापन',d:'पेरणीवेळी DAP 25 किलो + MOP 15 किलो/एकर द्या. युरिया देणे टाळा — सोयाबीन स्वतः नायट्रोजन बनवते.'},{t:'पाणी व्यवस्थापन',d:'फुलोरा (45 दिवस) व शेंगा भरताना (75 दिवस) एक-एक संरक्षण सिंचन द्या. जास्त पाणी हानिकारक.'},{t:'काढणी',d:'95–100 दिवसांत. झाडे पिवळी पडल्यावर काढणी. ओलावा 12% पेक्षा कमी असताना साठवा.'}]},
+  cotton:{n:'कापूस',e:'Cotton',s:['kharif'],i:['drip','sprinkler','flood'],b:['medium','high'],w:'जास्त',c:[12000,22000],y:[5,12],p:[6500,7500],r:'high',rl:'जास्त',d:'जास्त पाणी व खर्च. भाव चांगला पण धोका जास्त. दुष्काळात घेणे टाळा. अनुभव आवश्यक.',steps:[{t:'जमीन तयारी',d:'खोल नांगरणी (28–30 सेमी). शेणखत 10 टन/एकर. जड मातीत जिप्सम 2 क्विंटल/एकर वापरा.'},{t:'पेरणी',d:'मे अखेर–जून मध्य. BT कापूस (JKHY-1 किंवा Bunny). ओळ अंतर 90×60 सेमी.'},{t:'खत',d:'N:P:K = 32:16:16 किलो/एकर. तीन हप्त्यात: पेरणी, 45 व 75 दिवसांनी. बोरॉन फवारणी बोंड लागताना.'},{t:'सिंचन',d:'ठिबक उत्तम. दर 7–10 दिवसांनी पाणी. फुलोरा व बोंड लागताना जास्त महत्त्वाचे. जास्त पाणी नको.'},{t:'कापणी',d:'बोंडे उघडताच तुडवा. ओला कापूस साठवू नका — काळा पडतो. 3–4 तोडण्या होतात.'}]},
+  tur:{n:'तूर',e:'Pigeon Pea',s:['kharif'],i:['none','drip'],b:['low','medium'],w:'कमी',c:[5000,9000],y:[5,10],p:[5800,7000],r:'low',rl:'कमी',d:'दुष्काळ सहन करते. कमी पाण्यात उत्तम उत्पन्न. मराठवाड्यासाठी सर्वात सुरक्षित पीक.',steps:[{t:'जमीन',d:'एक खोल नांगरणी. शेणखत 3–4 टन/एकर. माती चांगली निथळणारी असावी.'},{t:'पेरणी',d:'जून 15 – जुलै 15. Rhizobium जिवाणू खत आवश्य लावा. ओळ अंतर 90 सेमी. बी: 4–5 किलो/एकर.'},{t:'खत',d:'DAP 15 किलो + MOP 10 किलो पेरणीवेळी. 6–7 आठवड्यांनी युरिया 10 किलो/एकर.'},{t:'पाणी',d:'कोरडवाहूत उत्तम होतो. पाऊस नसल्यास फुलोरा (90 दिवस) व शेंगा भरताना (120 दिवस) एक-एक पाणी.'},{t:'काढणी',d:'180–200 दिवसांत. 75% शेंगा सुकल्यावर काढा. झाडासकट काढणी व मळणी फायदेशीर.'}]},
+  groundnut:{n:'भुईमूग',e:'Groundnut',s:['kharif'],i:['none','drip','sprinkler'],b:['low','medium'],w:'मध्यम',c:[7000,12000],y:[10,18],p:[4500,6000],r:'low',rl:'कमी',d:'हलक्या जमिनीत उत्तम. कमी पाण्यात चांगले उत्पन्न. रब्बी हंगामातही घेता येते.',steps:[{t:'जमीन',d:'हलकी, निथळणारी, वालुकामय माती. खोल नांगरणी. जमीन सपाट करा.'},{t:'पेरणी',d:'जून–जुलैत. फुले प्रगती किंवा चाफा वाण. बी अंतर 30×15 सेमी. बी दर: 40–50 किलो/एकर.'},{t:'खत',d:'जिप्सम 40 किलो/एकर फुलोरावेळी (पेगिंग सुरू होताना). DAP 20 किलो + MOP 15 किलो पेरणीवेळी.'},{t:'पाणी',d:'शेंगा जमिनीत जाताना (पेगिंग) व भरताना (80–100 दिवस) पाणी खूप महत्त्वाचे.'},{t:'काढणी',d:'105–115 दिवसांनी. खालच्या शेंगे पोचल्यावर उपटा. माती ओली असताना काढणे सोपे.'}]},
+  wheat:{n:'गहू',e:'Wheat',s:['rabi'],i:['drip','sprinkler','flood'],b:['medium','high'],w:'जास्त',c:[9000,16000],y:[12,20],p:[2200,2500],r:'low',rl:'कमी',d:'हमीभाव (MSP) असल्याने आर्थिकदृष्ट्या सुरक्षित. सिंचन असेल तर उत्तम उत्पन्न.',steps:[{t:'जमीन तयारी',d:'दोन नांगरणी. शेणखत 5 टन/एकर. समपातळी करा — पाणी साचणार नाही याची काळजी घ्या.'},{t:'पेरणी',d:'नोव्हें 15 – डिसें 5 (वेळेवर पेरणी महत्त्वाची). GW-322 किंवा Phule Samadha वाण. बी: 45–50 किलो/एकर.'},{t:'खत',d:'N:P:K = 60:30:20 किलो/एकर. अर्धे N (युरिया) पेरणीवेळी, उरलेले अर्धे पहिल्या पाण्यानंतर.'},{t:'सिंचन',d:'पहिले पाणी 21 दिवसांनी (CRI). एकूण 5–6 पाणी. फुलोरा (60 दिवस) व दाणे भरताना (85 दिवस) महत्त्वाचे.'},{t:'काढणी',d:'मार्च–एप्रिलमध्ये. दाणे कठीण झाल्यावर. कंबाइन हार्वेस्टर वापरल्यास खर्च कमी व नुकसान कमी.'}]},
+  gram:{n:'हरभरा',e:'Chickpea',s:['rabi'],i:['none','drip'],b:['low','medium'],w:'कमी',c:[5000,9000],y:[8,14],p:[4800,5800],r:'low',rl:'कमी',d:'कोरड्या हवामानात उत्तम. कमी खर्च, चांगले उत्पन्न. मराठवाड्यात सर्वात लोकप्रिय रब्बी पीक.',steps:[{t:'जमीन',d:'मध्यम भारी माती. एक नांगरणी. शेणखत 3 टन/एकर. जास्त पाणी साचणार नाही याची काळजी.'},{t:'पेरणी',d:'ऑक्टो 15 – नोव्हें 15. विजय किंवा Phule G-5. बी: 30–35 किलो/एकर. ओळ अंतर 30×10 सेमी.'},{t:'खत',d:'Rhizobium जिवाणू खत बीजांना लावा — नायट्रोजनची गरज कमी होते. DAP 15 + MOP 10 किलो/एकर.'},{t:'पाणी',d:'कोरडवाहूत उत्तम होतो. फुलोरावेळी (45–50 दिवस) एक पाणी दिल्यास उत्पन्न 25–30% वाढते.'},{t:'काढणी',d:'90–100 दिवसांत. झाडे पिवळी पडल्यावर काढणी. ओल्या पावसात काढू नका — बुरशी येते.'}]},
+  onion:{n:'कांदा',e:'Onion',s:['rabi','kharif'],i:['drip','sprinkler','flood'],b:['medium','high'],w:'जास्त',c:[20000,35000],y:[80,120],p:[800,3000],r:'high',rl:'जास्त',d:'भाव खूप चढ-उतार होतात. अनुभवी शेतकऱ्यांनी घ्यावे. नफा किंवा तोटा दोन्ही शक्य.',steps:[{t:'रोपवाटिका',d:'उंच वाफे (15 सेमी). बियाणे 3–4 किलो/एकर. सप्टें–ऑक्टोबरमध्ये पेरा. 45 दिवसांत रोप लावणीयोग्य होते.'},{t:'लागवड',d:'लागवडीपूर्वी शेत चांगले भिजवा. ओळ अंतर 15×10 सेमी. संध्याकाळी लागवड करा. रोप ताजे असताना लावा.'},{t:'खत',d:'N:P:K = 50:50:50 किलो/एकर. तीन हप्त्यात. बोरॉन 1 किलो/एकर फवारणी — कांद्याचा आकार सुधारतो.'},{t:'सिंचन',d:'ठिबक उत्तम (20–25% पाणी बचत). दर 4–5 दिवसांनी. काढणीआधी 15 दिवस पाणी बंद — साठवण चांगली होते.'},{t:'काढणी व साठवण',d:'105–120 दिवसांत. पाने आडवी पडल्यावर काढा. 3–4 दिवस सावलीत सुकवा. हवेशीर चाळ्यात साठवा.'}]},
+  garlic:{n:'लसूण',e:'Garlic',s:['rabi'],i:['drip','sprinkler'],b:['high'],w:'जास्त',c:[25000,40000],y:[30,50],p:[2000,8000],r:'high',rl:'जास्त',d:'खर्च जास्त. भाव चांगला मिळाल्यास मोठा नफा. अनुभव व बाजार ज्ञान आवश्यक.',steps:[{t:'जमीन व बेड',d:'चांगली निथळणारी माती. उंच वाफे (20 सेमी). शेणखत 8 टन/एकर + जिप्सम 2 क्विंटल/एकर.'},{t:'लागवड',d:'ऑक्टो–नोव्हेंबर. चांगल्या पाकळ्या (5–7 ग्राम) निवडा. सुट्या करून लावा. 15×10 सेमी. खोली 3–4 सेमी.'},{t:'खत',d:'N:P:K = 50:40:30 किलो/एकर. 3 हप्त्यात. झिंक 5 किलो + बोरॉन 1 किलो/एकर फवारणी.'},{t:'सिंचन',d:'ठिबक सर्वोत्तम. दर 5–7 दिवसांनी. कंदे वाढताना (80–100 दिवस) जास्त पाणी. काढणीआधी 20 दिवस बंद.'},{t:'काढणी',d:'120–130 दिवसांत. पाने पिवळी व आडवी पडतात. कोरड्या जमिनीत काढा. 7–10 दिवस उन्हात सुकवा.'}]},
+  onionSeed:{n:'कांदा बी',e:'Onion Seed',s:['rabi'],i:['drip'],b:['high'],w:'जास्त',c:[30000,50000],y:[1.5,3],p:[50000,150000],r:'high',rl:'जास्त',d:'प्रगत शेती. अत्यंत जास्त नफा शक्य. अनुभव, बाजार ज्ञान व काळजी आवश्यक. कृषी विभागाचे मार्गदर्शन घ्या.',steps:[{t:'विशेष तयारी',d:'Onion seed उत्पादन हे प्रगत तंत्र आहे. कृषी विभाग किंवा NHRDF च्या तज्ज्ञाकडून प्रशिक्षण घ्या.'},{t:'बीजमाता निवड',d:'Bhima Raj, Bhima Kiran किंवा Agrifound Dark Red वाणांचे बी उत्पादन घेता येते. मे–जून मध्ये बीजमाता कांदे निवडून साठवा.'},{t:'लागवड',d:'ऑक्टो–नोव्हेंबरमध्ये बीजमाता लागवड. ओळ अंतर 20×15 सेमी. ठिबक सिंचन अनिवार्य.'},{t:'परागण व काळजी',d:'मधमाशा पेट्या शेतात ठेवा (2–3 पेट्या/एकर). सकाळी 9–11 परागण जास्त. या काळात कीटकनाशक फवारू नका.'},{t:'बी काढणी',d:'फुले वाळल्यावर काळ्या रंगाचे बी तयार. पिशव्या बांधा — बी गळू नये. थंड (15°C) व कोरड्या जागी साठवा.'}]}
+};
+
+function nav(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='sc-guide')initGuide();
+}
+
+function updLand(v){
+  S.land=parseFloat(v);
+  document.getElementById('lv').textContent=v+' एकर';
+}
+
+function pick(g,v,el){
+  S[g]=v;
+  document.querySelectorAll(`[data-g="${g}"]`).forEach(e=>e.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function calcRec(){
+  const ro={low:0,medium:1,high:2};
+  let res=Object.entries(C)
+    .filter(([k,c])=>c.s.includes(S.season)&&c.i.includes(S.irr)&&c.b.includes(S.bgt))
+    .sort((a,b)=>ro[a[1].r]-ro[b[1].r])
+    .slice(0,3);
+
+  const irrL={'none':'कोरडवाहू','drip':'ठिबक','sprinkler':'तुषार','flood':'पूर'};
+  const sL={'kharif':'खरीप','rabi':'रब्बी'};
+  document.getElementById('res-sub').textContent=
+    S.land+' एकर · '+sL[S.season]+' · '+irrL[S.irr]+' · बजेट: '+(S.bgt==='low'?'कमी':S.bgt==='medium'?'मध्यम':'जास्त');
+
+  let html='';
+  if(!res.length){
+    html=`<div class="card" style="text-align:center;padding:24px 16px;">
+      <div style="font-size:40px;margin-bottom:12px;">⚠️</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;">पीक सापडले नाही</div>
+      <div style="font-size:13px;color:var(--text2);">तुमच्या निवडीनुसार कोणतेही पीक उपलब्ध नाही. सिंचन प्रकार किंवा बजेट बदला.</div>
+      <button class="bp" style="margin-top:16px;" onclick="nav('sc-adv')">परत जा</button>
+    </div>`;
+  } else {
+    const f=n=>'₹ '+Math.round(n).toLocaleString('en-IN');
+    res.forEach(([k,c],i)=>{
+      const mc=c.c[0]*S.land, xc=c.c[1]*S.land;
+      const my=c.y[0]*S.land, xy=c.y[1]*S.land;
+      const mr=my*c.p[0], xr=xy*c.p[1];
+      const mp=mr-xc, xp=xr-mc;
+      const bc=c.r==='low'?'bl':c.r==='medium'?'bm':'bh';
+      const border=i===0?'border:2px solid var(--brand);':'';
+      html+=`
+      <div class="cc" style="${border}">
+        <div class="cch">
+          <div>
+            <div class="cn">${c.n}</div>
+            <div style="font-size:12px;color:var(--text2);">${c.e}</div>
+          </div>
+          <div style="text-align:right;">
+            ${i===0?'<div class="best-badge">⭐ सर्वोत्तम</div>':''}
+            <span class="cb ${bc}">धोका: ${c.rl}</span>
+          </div>
+        </div>
+        <div class="ccb">
+          <p style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.55;">${c.d}</p>
+          <div style="margin-bottom:11px;">
+            <span class="tag tw">💧 पाणी: ${c.w}</span>
+            <span class="tag ts">🌿 ${c.s.map(x=>x==='kharif'?'खरीप':'रब्बी').join('/')}</span>
+          </div>
+          <div class="sh">📊 खर्च व नफा अंदाज — ${S.land} एकर</div>
+          <div class="cr"><span class="cl">एकूण खर्च</span><span class="cv">${f(mc)} – ${f(xc)}</span></div>
+          <div class="cr"><span class="cl">अपेक्षित उत्पन्न</span><span class="cv">${my.toFixed(1)} – ${xy.toFixed(1)} क्विंटल</span></div>
+          <div class="cr"><span class="cl">बाजार मूल्य</span><span class="cv">${f(mr)} – ${f(xr)}</span></div>
+          <div class="cr"><span class="cl">अंदाजे नफा</span>
+            <span class="cv ${mp>0?'profit':'loss'}">${mp>0?'+':''} ${f(mp)} – ${f(xp)}</span>
+          </div>
+          <button class="bs" onclick="S.guide='${k}';nav('sc-guide')">📋 शेती मार्गदर्शन पहा →</button>
+        </div>
+      </div>`;
+    });
+    html+='<div class="disc">⚠️ ही माहिती अंदाजे आहे. हवामान, बाजारभाव व इतर घटकांवर प्रत्यक्ष नफा अवलंबून असतो. अधिक माहितीसाठी स्थानिक कृषी विभागाशी संपर्क करा.</div>';
+  }
+  document.getElementById('res-body').innerHTML=html;
+  nav('sc-res');
+}
+
+const GALL=['soybean','cotton','tur','groundnut','wheat','gram','onion','garlic','onionSeed'];
+
+function initGuide(){
+  document.getElementById('g-pills').innerHTML=
+    GALL.map(k=>`<button class="pill ${S.guide===k?'act':''}" onclick="selGuide('${k}')">${C[k].n}</button>`).join('');
+  renderGuide(S.guide||'gram');
+}
+
+function selGuide(k){
+  S.guide=k;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('act',p.textContent===C[k].n));
+  renderGuide(k);
+}
+
+function renderGuide(k){
+  const c=C[k];
+  const sL={'kharif':'खरीप','rabi':'रब्बी'};
+  const f=n=>'₹ '+Math.round(n).toLocaleString('en-IN');
+  document.getElementById('g-content').innerHTML=`
+    <div class="card" style="margin-bottom:11px;">
+      <div style="font-size:20px;font-weight:700;margin-bottom:5px;">${c.n}
+        <span style="font-size:13px;font-weight:400;color:var(--text2);">&nbsp;${c.e}</span>
+      </div>
+      <div style="margin-bottom:10px;">
+        <span class="tag tw">💧 पाणी: ${c.w}</span>
+        <span class="tag ts">🗓 ${c.s.map(x=>sL[x]).join(' / ')}</span>
+        <span class="cb ${c.r==='low'?'bl':c.r==='medium'?'bm':'bh'}" style="font-size:11px;padding:3px 8px;border-radius:12px;display:inline-block;">धोका: ${c.rl}</span>
+      </div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.55;">${c.d}</p>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;gap:16px;font-size:12px;">
+        <div><div style="color:var(--text2);">खर्च (प्रति एकर)</div><div style="font-weight:700;color:var(--ri);">${f(c.c[0])} – ${f(c.c[1])}</div></div>
+        <div><div style="color:var(--text2);">उत्पन्न (प्रति एकर)</div><div style="font-weight:700;color:var(--brand);">${c.y[0]} – ${c.y[1]} क्विंटल</div></div>
+        <div><div style="color:var(--text2);">भाव</div><div style="font-weight:700;color:var(--am);">${f(c.p[0])} – ${f(c.p[1])}/क्विं</div></div>
+      </div>
+    </div>
+    <div class="sh">📋 पायरी-पायरी मार्गदर्शन</div>
+    ${c.steps.map((s,i)=>`
+      <div class="si">
+        <div class="sn">${i+1}</div>
+        <div>
+          <div class="st">${s.t}</div>
+          <div class="sd">${s.d}</div>
+        </div>
+      </div>`).join('')}
+    <div class="disc">ही माहिती सामान्य मार्गदर्शनासाठी आहे. जमीन प्रकार, हवामान व स्थानिक परिस्थितीनुसार शेती पद्धत बदलू शकते. स्थानिक कृषी सहाय्यकाचा सल्ला अवश्य घ्या.</div>`;
+}
+
+// Auto-detect season
+(function(){
+  const m=new Date().getMonth();
+  if(m>=5&&m<=9){
+    S.season='kharif';
+    const kEl=document.querySelector('[data-v="kharif"]');
+    const rEl=document.querySelector('[data-v="rabi"]');
+    if(kEl)kEl.classList.add('sel');
+    if(rEl)rEl.classList.remove('sel');
+    const hEl=document.getElementById('h-season');
+    if(hEl)hEl.textContent='खरीप २०२५';
+  }
+})();
+</script>
+</body>
+</html>
